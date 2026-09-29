@@ -1,31 +1,51 @@
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>3D Bilardo</title>
 
-    <link rel="stylesheet" href="style.css">
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
 </head>
 
 <body>
 
-    <div id="info">🎱 3D Bilardo</div>
+    <div id="info">
+        🎱 3D Bilardo
+    </div>
 
     <div id="power">
+
         <input
             type="range"
             min="1"
             max="100"
             value="50"
         >
+
     </div>
 
-    <script
-        type="module"
-        src="game.js">
-    </script>
+
+    <!-- THREE.JS -->
+
+    <script src="https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.min.js"></script>
+
+
+    <!-- OYUN -->
+
+    <script src="game.js?v=3"></script>
 
 </body>
+
 </html>
