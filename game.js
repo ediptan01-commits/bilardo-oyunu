@@ -1,23 +1,10 @@
-import * as THREE from
-"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js";
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js";
 
-import { OrbitControls } from
-"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/controls/OrbitControls.js";
-
-
-/* =========================
-   SAHNE
-========================= */
-
+// SAHNE
 const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x111111);
 
-scene.background = new THREE.Color(0x151515);
-
-
-/* =========================
-   KAMERA
-========================= */
-
+// KAMERA
 const camera = new THREE.PerspectiveCamera(
     50,
     window.innerWidth / window.innerHeight,
@@ -26,12 +13,9 @@ const camera = new THREE.PerspectiveCamera(
 );
 
 camera.position.set(0, 8, 9);
+camera.lookAt(0, 0, 0);
 
-
-/* =========================
-   RENDER
-========================= */
-
+// RENDER
 const renderer = new THREE.WebGLRenderer({
     antialias: true
 });
@@ -48,119 +32,64 @@ renderer.setPixelRatio(
 document.body.appendChild(renderer.domElement);
 
 
-/* =========================
-   KAMERA KONTROLÜ
-========================= */
-
-const controls = new OrbitControls(
-    camera,
-    renderer.domElement
+// IŞIK
+const ambientLight = new THREE.AmbientLight(
+    0xffffff,
+    2
 );
-
-controls.target.set(0, 0, 0);
-
-controls.enableDamping = true;
-
-controls.minDistance = 5;
-controls.maxDistance = 15;
-
-controls.maxPolarAngle =
-    Math.PI / 2.1;
-
-
-/* =========================
-   IŞIKLAR
-========================= */
-
-const ambientLight =
-    new THREE.AmbientLight(
-        0xffffff,
-        1.5
-    );
 
 scene.add(ambientLight);
 
-
-const mainLight =
-    new THREE.DirectionalLight(
-        0xffffff,
-        3
-    );
-
-mainLight.position.set(
-    0,
-    10,
-    5
+const mainLight = new THREE.DirectionalLight(
+    0xffffff,
+    4
 );
+
+mainLight.position.set(0, 10, 5);
 
 scene.add(mainLight);
 
 
-/* =========================
-   BİLARDO MASASI
-========================= */
+// ==========================
+// BİLARDO MASASI
+// ==========================
 
-const tableGroup =
-    new THREE.Group();
+const table = new THREE.Group();
 
-scene.add(tableGroup);
+scene.add(table);
 
 
-/* Ahşap çerçeve */
+// AHŞAP ÇERÇEVE
 
-const frameGeometry =
-    new THREE.BoxGeometry(
-        12,
-        0.7,
-        6.8
-    );
-
-const frameMaterial =
+const frame = new THREE.Mesh(
+    new THREE.BoxGeometry(12, 0.7, 6.8),
     new THREE.MeshStandardMaterial({
-        color: 0x5a3018,
-        roughness: 0.5
-    });
-
-const frame =
-    new THREE.Mesh(
-        frameGeometry,
-        frameMaterial
-    );
+        color: 0x6b3518
+    })
+);
 
 frame.position.y = -0.35;
 
-tableGroup.add(frame);
+table.add(frame);
 
 
-/* Yeşil oyun alanı */
+// YEŞİL KUMAŞ
 
-const clothGeometry =
-    new THREE.BoxGeometry(
-        10.8,
-        0.25,
-        5.6
-    );
-
-const clothMaterial =
+const cloth = new THREE.Mesh(
+    new THREE.BoxGeometry(10.8, 0.25, 5.6),
     new THREE.MeshStandardMaterial({
-        color: 0x087a3c,
-        roughness: 0.8
-    });
-
-const cloth =
-    new THREE.Mesh(
-        clothGeometry,
-        clothMaterial
-    );
+        color: 0x087a3c
+    })
+);
 
 cloth.position.y = 0;
 
-tableGroup.add(cloth);
+table.add(cloth);
 
 
-/* =========================
-   BANTLAR
-========================= */
+// ==========================
+// BANTLAR
+// ==========================
 
 const railMaterial =
     new THREE.MeshStandardMaterial({
@@ -168,25 +97,16 @@ const railMaterial =
     });
 
 
-function createRail(
-    x,
-    z,
-    width,
-    depth
-) {
+function createRail(x, z, width, depth) {
 
-    const geometry =
+    const rail = new THREE.Mesh(
         new THREE.BoxGeometry(
             width,
             0.35,
             depth
-        );
-
-    const rail =
-        new THREE.Mesh(
-            geometry,
-            railMaterial
-        );
+        ),
+        railMaterial
+    );
 
     rail.position.set(
         x,
@@ -194,7 +114,7 @@ function createRail(
         z
     );
 
-    tableGroup.add(rail);
+    table.add(rail);
 }
 
 
@@ -227,34 +147,27 @@ createRail(
 );
 
 
-/* =========================
-   DELİKLER
-========================= */
+// ==========================
+// DELİKLER
+// ==========================
 
 const pocketMaterial =
     new THREE.MeshStandardMaterial({
-        color: 0x050505
+        color: 0x000000
     });
 
 
 function createPocket(x, z) {
 
-    const geometry =
+    const pocket = new THREE.Mesh(
         new THREE.CylinderGeometry(
-            0.42,
-            0.42,
-            0.12,
+            0.45,
+            0.45,
+            0.15,
             32
-        );
-
-    const pocket =
-        new THREE.Mesh(
-            geometry,
-            pocketMaterial
-        );
-
-    pocket.rotation.x =
-        Math.PI / 2;
+        ),
+        pocketMaterial
+    );
 
     pocket.position.set(
         x,
@@ -262,11 +175,9 @@ function createPocket(x, z) {
         z
     );
 
-    tableGroup.add(pocket);
+    table.add(pocket);
 }
 
-
-/* 6 delik */
 
 createPocket(-5.35, -2.75);
 createPocket(0, -2.75);
@@ -277,37 +188,23 @@ createPocket(0, 2.75);
 createPocket(5.35, 2.75);
 
 
-/* =========================
-   TOPLAR
-========================= */
+// ==========================
+// TOPLAR
+// ==========================
 
-const balls = [];
+function createBall(color, x, z) {
 
-
-function createBall(
-    color,
-    x,
-    z
-) {
-
-    const geometry =
+    const ball = new THREE.Mesh(
         new THREE.SphereGeometry(
             0.27,
             32,
             32
-        );
-
-    const material =
+        ),
         new THREE.MeshStandardMaterial({
             color: color,
             roughness: 0.25
-        });
-
-    const ball =
-        new THREE.Mesh(
-            geometry,
-            material
-        );
+        })
+    );
 
     ball.position.set(
         x,
@@ -316,14 +213,10 @@ function createBall(
     );
 
     scene.add(ball);
-
-    balls.push(ball);
-
-    return ball;
 }
 
 
-/* Beyaz top */
+// BEYAZ TOP
 
 createBall(
     0xffffff,
@@ -332,30 +225,33 @@ createBall(
 );
 
 
-/* Renkli toplar */
+// RENKLİ TOPLAR
 
 const colors = [
+
     0xff0000,
     0xffff00,
     0x0000ff,
     0xff6600,
     0x800080,
+
     0x00ffff,
     0xff1493,
     0x000000,
     0xff3333,
     0xffcc00,
+
     0x3333ff,
     0xff8800,
     0x9900cc,
     0x00aa55,
     0xff0055
+
 ];
 
 
 let index = 0;
 
-const startX = 2.4;
 
 for (
     let row = 0;
@@ -370,7 +266,7 @@ for (
     ) {
 
         const x =
-            startX +
+            2.4 +
             row * 0.48;
 
         const z =
@@ -387,9 +283,9 @@ for (
 }
 
 
-/* =========================
-   MASA AYAKLARI
-========================= */
+// ==========================
+// MASA AYAKLARI
+// ==========================
 
 const legMaterial =
     new THREE.MeshStandardMaterial({
@@ -399,18 +295,14 @@ const legMaterial =
 
 function createLeg(x, z) {
 
-    const geometry =
+    const leg = new THREE.Mesh(
         new THREE.BoxGeometry(
             0.7,
             2.5,
             0.7
-        );
-
-    const leg =
-        new THREE.Mesh(
-            geometry,
-            legMaterial
-        );
+        ),
+        legMaterial
+    );
 
     leg.position.set(
         x,
@@ -428,42 +320,36 @@ createLeg(-4.8, 2.4);
 createLeg(4.8, 2.4);
 
 
-/* =========================
-   ZEMİN
-========================= */
+// ==========================
+// ZEMİN
+// ==========================
 
-const floorGeometry =
+const floor = new THREE.Mesh(
     new THREE.PlaneGeometry(
         40,
         40
-    );
-
-const floorMaterial =
+    ),
     new THREE.MeshStandardMaterial({
         color: 0x222222
-    });
-
-const floor =
-    new THREE.Mesh(
-        floorGeometry,
-        floorMaterial
-    );
+    })
+);
 
 floor.rotation.x =
     -Math.PI / 2;
 
-floor.position.y = -2.85;
+floor.position.y =
+    -2.85;
 
 scene.add(floor);
 
 
-/* =========================
-   EKRAN BOYUTU
-========================= */
+// ==========================
+// EKRAN BOYUTU
+// ==========================
 
 window.addEventListener(
     "resize",
-    () => {
+    function () {
 
         camera.aspect =
             window.innerWidth /
@@ -479,17 +365,15 @@ window.addEventListener(
 );
 
 
-/* =========================
-   OYUN DÖNGÜSÜ
-========================= */
+// ==========================
+// OYUN DÖNGÜSÜ
+// ==========================
 
 function animate() {
 
     requestAnimationFrame(
         animate
     );
-
-    controls.update();
 
     renderer.render(
         scene,
