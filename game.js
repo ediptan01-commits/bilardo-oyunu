@@ -1,19 +1,18 @@
-import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js";
-
-// SAHNE
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x111111);
 
+
 // KAMERA
 const camera = new THREE.PerspectiveCamera(
-    50,
+    55,
     window.innerWidth / window.innerHeight,
     0.1,
     1000
 );
 
-camera.position.set(0, 8, 9);
+camera.position.set(0, 13, 8);
 camera.lookAt(0, 0, 0);
+
 
 // RENDER
 const renderer = new THREE.WebGLRenderer({
@@ -33,25 +32,24 @@ document.body.appendChild(renderer.domElement);
 
 
 // IŞIK
-const ambientLight = new THREE.AmbientLight(
-    0xffffff,
-    2
+scene.add(
+    new THREE.AmbientLight(
+        0xffffff,
+        2
+    )
 );
 
-scene.add(ambientLight);
-
-const mainLight = new THREE.DirectionalLight(
+const light = new THREE.DirectionalLight(
     0xffffff,
     4
 );
 
-mainLight.position.set(0, 10, 5);
-
-scene.add(mainLight);
+light.position.set(0, 12, 5);
+scene.add(light);
 
 
 // ==========================
-// BİLARDO MASASI
+// MASA
 // ==========================
 
 const table = new THREE.Group();
@@ -62,7 +60,11 @@ scene.add(table);
 // AHŞAP ÇERÇEVE
 
 const frame = new THREE.Mesh(
-    new THREE.BoxGeometry(12, 0.7, 6.8),
+    new THREE.BoxGeometry(
+        12,
+        0.7,
+        6.8
+    ),
     new THREE.MeshStandardMaterial({
         color: 0x6b3518
     })
@@ -73,23 +75,24 @@ frame.position.y = -0.35;
 table.add(frame);
 
 
-// YEŞİL KUMAŞ
+// YEŞİL ALAN
 
 const cloth = new THREE.Mesh(
-    new THREE.BoxGeometry(10.8, 0.25, 5.6),
+    new THREE.BoxGeometry(
+        10.8,
+        0.25,
+        5.6
+    ),
     new THREE.MeshStandardMaterial({
-        color: 0x087a3c
+        color: 0x087a3c,
+        roughness: 0.8
     })
 );
-
-cloth.position.y = 0;
 
 table.add(cloth);
 
 
-// ==========================
 // BANTLAR
-// ==========================
 
 const railMaterial =
     new THREE.MeshStandardMaterial({
@@ -97,9 +100,9 @@ const railMaterial =
     });
 
 
-function createRail(x, z, width, depth) {
+function rail(x, z, width, depth) {
 
-    const rail = new THREE.Mesh(
+    const r = new THREE.Mesh(
         new THREE.BoxGeometry(
             width,
             0.35,
@@ -108,48 +111,23 @@ function createRail(x, z, width, depth) {
         railMaterial
     );
 
-    rail.position.set(
+    r.position.set(
         x,
         0.25,
         z
     );
 
-    table.add(rail);
+    table.add(r);
 }
 
 
-createRail(
-    0,
-    -2.9,
-    10.8,
-    0.35
-);
-
-createRail(
-    0,
-    2.9,
-    10.8,
-    0.35
-);
-
-createRail(
-    -5.4,
-    0,
-    0.35,
-    5.6
-);
-
-createRail(
-    5.4,
-    0,
-    0.35,
-    5.6
-);
+rail(0, -2.9, 10.8, 0.35);
+rail(0, 2.9, 10.8, 0.35);
+rail(-5.4, 0, 0.35, 5.6);
+rail(5.4, 0, 0.35, 5.6);
 
 
-// ==========================
 // DELİKLER
-// ==========================
 
 const pocketMaterial =
     new THREE.MeshStandardMaterial({
@@ -157,9 +135,9 @@ const pocketMaterial =
     });
 
 
-function createPocket(x, z) {
+function pocket(x, z) {
 
-    const pocket = new THREE.Mesh(
+    const p = new THREE.Mesh(
         new THREE.CylinderGeometry(
             0.45,
             0.45,
@@ -169,40 +147,50 @@ function createPocket(x, z) {
         pocketMaterial
     );
 
-    pocket.position.set(
+    p.position.set(
         x,
         0.18,
         z
     );
 
-    table.add(pocket);
+    table.add(p);
 }
 
 
-createPocket(-5.35, -2.75);
-createPocket(0, -2.75);
-createPocket(5.35, -2.75);
+pocket(-5.35, -2.75);
+pocket(0, -2.75);
+pocket(5.35, -2.75);
 
-createPocket(-5.35, 2.75);
-createPocket(0, 2.75);
-createPocket(5.35, 2.75);
+pocket(-5.35, 2.75);
+pocket(0, 2.75);
+pocket(5.35, 2.75);
 
 
 // ==========================
 // TOPLAR
 // ==========================
 
-function createBall(color, x, z) {
+const balls = [];
+
+const BALL_RADIUS = 0.27;
+
+
+function createBall(
+    color,
+    x,
+    z,
+    isCue = false
+) {
 
     const ball = new THREE.Mesh(
         new THREE.SphereGeometry(
-            0.27,
+            BALL_RADIUS,
             32,
             32
         ),
         new THREE.MeshStandardMaterial({
             color: color,
-            roughness: 0.25
+            roughness: 0.2
         })
     );
 
@@ -212,46 +200,52 @@ function createBall(color, x, z) {
         z
     );
 
+    ball.userData.velocity =
+        new THREE.Vector3(0, 0, 0);
+
+    ball.userData.isCue =
+        isCue;
+
     scene.add(ball);
+
+    balls.push(ball);
+
+    return ball;
 }
 
 
 // BEYAZ TOP
 
-createBall(
+const cueBall = createBall(
     0xffffff,
-    -3.3,
-    0
+    -3.5,
+    0,
+    true
 );
 
 
 // RENKLİ TOPLAR
 
 const colors = [
-
     0xff0000,
     0xffff00,
     0x0000ff,
     0xff6600,
     0x800080,
-
     0x00ffff,
     0xff1493,
-    0x000000,
+    0x111111,
     0xff3333,
     0xffcc00,
-
     0x3333ff,
     0xff8800,
     0x9900cc,
     0x00aa55,
     0xff0055
-
 ];
 
 
 let index = 0;
-
 
 for (
     let row = 0;
@@ -265,20 +259,389 @@ for (
         col++
     ) {
 
-        const x =
-            2.4 +
-            row * 0.48;
-
-        const z =
-            (col - row / 2) * 0.55;
-
         createBall(
+
             colors[index],
-            x,
-            z
+
+            2.0 +
+            row * 0.48,
+
+            (col - row / 2) * 0.55
+
         );
 
         index++;
+    }
+}
+
+
+// ==========================
+// VURUŞ SİSTEMİ
+// ==========================
+
+const raycaster =
+    new THREE.Raycaster();
+
+const mouse =
+    new THREE.Vector2();
+
+const plane =
+    new THREE.Plane(
+        new THREE.Vector3(0, 1, 0),
+        -0.32
+    );
+
+
+let aiming = false;
+
+let startPoint =
+    new THREE.Vector3();
+
+
+// GÜÇ
+
+const powerSlider =
+    document.querySelector(
+        "#power input"
+    );
+
+
+// EKRAN → MASA
+
+function getTablePoint(event) {
+
+    const rect =
+        renderer.domElement.getBoundingClientRect();
+
+    mouse.x =
+        ((event.clientX - rect.left) /
+        rect.width) * 2 - 1;
+
+    mouse.y =
+        -((event.clientY - rect.top) /
+        rect.height) * 2 + 1;
+
+    raycaster.setFromCamera(
+        mouse,
+        camera
+    );
+
+    const point =
+        new THREE.Vector3();
+
+    raycaster.ray.intersectPlane(
+        plane,
+        point
+    );
+
+    return point;
+}
+
+
+// DOKUNMAYA BAŞLA
+
+renderer.domElement.addEventListener(
+    "pointerdown",
+    function(event) {
+
+        if (ballsMoving()) {
+            return;
+        }
+
+        const point =
+            getTablePoint(event);
+
+        const distance =
+            point.distanceTo(
+                cueBall.position
+            );
+
+        if (distance < 0.8) {
+
+            aiming = true;
+
+            startPoint.copy(point);
+
+        }
+    }
+);
+
+
+// PARMAĞI BIRAK
+
+renderer.domElement.addEventListener(
+    "pointerup",
+    function(event) {
+
+        if (!aiming) {
+            return;
+        }
+
+        aiming = false;
+
+        const endPoint =
+            getTablePoint(event);
+
+        const direction =
+            new THREE.Vector3()
+                .subVectors(
+                    startPoint,
+                    endPoint
+                );
+
+        const distance =
+            direction.length();
+
+        if (distance < 0.05) {
+            return;
+        }
+
+        direction.normalize();
+
+
+        const power =
+            Number(powerSlider.value) / 100;
+
+
+        const speed =
+            Math.min(
+                distance * 8,
+                12
+            ) * power;
+
+
+        cueBall.userData.velocity
+            .copy(direction)
+            .multiplyScalar(speed);
+    }
+);
+
+
+// ==========================
+// TOPLAR HAREKET
+// ==========================
+
+function ballsMoving() {
+
+    for (const ball of balls) {
+
+        if (
+            ball.userData.velocity.length()
+            > 0.02
+        ) {
+
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
+// ==========================
+// FİZİK
+// ==========================
+
+function updatePhysics() {
+
+    for (const ball of balls) {
+
+        const velocity =
+            ball.userData.velocity;
+
+
+        ball.position.x +=
+            velocity.x * 0.016;
+
+        ball.position.z +=
+            velocity.z * 0.016;
+
+
+        // SÜRTÜNME
+
+        velocity.multiplyScalar(
+            0.985
+        );
+
+
+        if (
+            velocity.length() < 0.015
+        ) {
+
+            velocity.set(
+                0,
+                0,
+                0
+            );
+        }
+
+
+        // SOL / SAĞ BANT
+
+        if (
+            ball.position.x <
+            -5.05
+        ) {
+
+            ball.position.x =
+                -5.05;
+
+            velocity.x =
+                Math.abs(
+                    velocity.x
+                ) * 0.85;
+        }
+
+
+        if (
+            ball.position.x >
+            5.05
+        ) {
+
+            ball.position.x =
+                5.05;
+
+            velocity.x =
+                -Math.abs(
+                    velocity.x
+                ) * 0.85;
+        }
+
+
+        // ALT / ÜST BANT
+
+        if (
+            ball.position.z <
+            -2.55
+        ) {
+
+            ball.position.z =
+                -2.55;
+
+            velocity.z =
+                Math.abs(
+                    velocity.z
+                ) * 0.85;
+        }
+
+
+        if (
+            ball.position.z >
+            2.55
+        ) {
+
+            ball.position.z =
+                2.55;
+
+            velocity.z =
+                -Math.abs(
+                    velocity.z
+                ) * 0.85;
+        }
+    }
+
+
+    // TOP-TOP ÇARPIŞMASI
+
+    for (
+        let i = 0;
+        i < balls.length;
+        i++
+    ) {
+
+        for (
+            let j = i + 1;
+            j < balls.length;
+            j++
+        ) {
+
+            const a = balls[i];
+            const b = balls[j];
+
+            const dx =
+                b.position.x -
+                a.position.x;
+
+            const dz =
+                b.position.z -
+                a.position.z;
+
+            const distance =
+                Math.sqrt(
+                    dx * dx +
+                    dz * dz
+                );
+
+            const minDistance =
+                BALL_RADIUS * 2;
+
+
+            if (
+                distance > 0 &&
+                distance < minDistance
+            ) {
+
+                const nx =
+                    dx / distance;
+
+                const nz =
+                    dz / distance;
+
+
+                const relativeX =
+                    b.userData.velocity.x -
+                    a.userData.velocity.x;
+
+                const relativeZ =
+                    b.userData.velocity.z -
+                    a.userData.velocity.z;
+
+
+                const velocityAlongNormal =
+                    relativeX * nx +
+                    relativeZ * nz;
+
+
+                if (
+                    velocityAlongNormal < 0
+                ) {
+
+                    const impulse =
+                        velocityAlongNormal;
+
+
+                    a.userData.velocity.x +=
+                        impulse * nx;
+
+                    a.userData.velocity.z +=
+                        impulse * nz;
+
+                    b.userData.velocity.x -=
+                        impulse * nx;
+
+                    b.userData.velocity.z -=
+                        impulse * nz;
+                }
+
+
+                const overlap =
+                    minDistance -
+                    distance;
+
+
+                a.position.x -=
+                    nx * overlap / 2;
+
+                a.position.z -=
+                    nz * overlap / 2;
+
+                b.position.x +=
+                    nx * overlap / 2;
+
+                b.position.z +=
+                    nz * overlap / 2;
+            }
+        }
     }
 }
 
@@ -320,9 +683,7 @@ createLeg(-4.8, 2.4);
 createLeg(4.8, 2.4);
 
 
-// ==========================
 // ZEMİN
-// ==========================
 
 const floor = new THREE.Mesh(
     new THREE.PlaneGeometry(
@@ -344,12 +705,12 @@ scene.add(floor);
 
 
 // ==========================
-// EKRAN BOYUTU
+// EKRAN
 // ==========================
 
 window.addEventListener(
     "resize",
-    function () {
+    function() {
 
         camera.aspect =
             window.innerWidth /
@@ -374,6 +735,8 @@ function animate() {
     requestAnimationFrame(
         animate
     );
+
+    updatePhysics();
 
     renderer.render(
         scene,
