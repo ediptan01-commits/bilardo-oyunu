@@ -1,0 +1,81 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    background: #111;
+    font-family: Arial, sans-serif;
+    touch-action: none;
+}
+
+/* Üst başlık */
+#info {
+    position: fixed;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    z-index: 10;
+
+    color: white;
+    background: rgba(0, 0, 0, 0.7);
+
+    padding: 10px 20px;
+    border-radius: 25px;
+
+    font-size: 16px;
+    font-weight: bold;
+
+    pointer-events: none;
+}
+
+/* Güç çubuğu */
+#power {
+    position: fixed;
+
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    width: min(280px, 75vw);
+
+    z-index: 10;
+
+    padding: 12px;
+
+    background: rgba(0, 0, 0, 0.7);
+
+    border-radius: 20px;
+}
+
+/* Güç ayarı */
+#power input {
+    width: 100%;
+    height: 8px;
+
+    accent-color: #ffffff;
+}
+
+/* Mobil */
+@media (max-width: 600px) {
+
+    #info {
+        top: 10px;
+        font-size: 14px;
+        padding: 8px 16px;
+    }
+
+    #power {
+        bottom: 18px;
+        width: 80vw;
+    }
+}
